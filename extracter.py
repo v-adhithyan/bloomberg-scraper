@@ -4,6 +4,7 @@ import sys
 from selenium.webdriver.common.keys import Keys
 import csv
 import datetime as dt
+import os
 
 def write_output(filename, field_names, rows):
     print "writing to file {}".format(filename)
@@ -48,8 +49,24 @@ for table in tables:
 
     # write to csv
     today = dt.datetime.today()
+    # save working directory so that we can switch to it later
+    cwd = os.getcwd()
+    # change to date directory where data files are organized month wise
+    os.chdir("data")
+
+    # check if a current month directory exists under data, if not create it
+    directory = today.strftime("%b_%y")
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+
+    os.chdir(directory)
+    # change to cuurent month dir, so that we can save files there
     filename = today.strftime("%d_%b_%y") + "_{}.csv".format(file_suffixes[j])
     j = j + 1
+
     write_output(filename, field_names, rows)
+
+    # go back to original working directory
+    os.chdir(cwd)
 
 driver.quit()
